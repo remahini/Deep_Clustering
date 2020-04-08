@@ -68,10 +68,10 @@ for (i in 1:n)
 # Saving trained Net
 autoencoderoder_weights <- autoencoderoder %>%
   keras::get_weights()
-keras::save_model_weights_hdf5(object = autoencoderoder,filepath = 'C:/Users/Rey/Desktop/autoencoderoder_weights.hdf5',overwrite = TRUE)
+keras::save_model_weights_hdf5(object = autoencoderoder,filepath = '.../autoencoderoder_weights.hdf5',overwrite = TRUE)
 
 encoderoder_model <- keras_model(inputs = encoder_input, outputs = encoderoder$output)
-encoderoder_model %>% keras::load_model_weights_hdf5(filepath = "C:/Users/Rey/Desktop/autoencoderoder_weights.hdf5",skip_mismatch = TRUE,by_name = TRUE)
+encoderoder_model %>% keras::load_model_weights_hdf5(filepath = ".../autoencoderoder_weights.hdf5",skip_mismatch = TRUE,by_name = TRUE)
 
 encoderoder_model %>% compile(
   loss='mean_squared_error',
