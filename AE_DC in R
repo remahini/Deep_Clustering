@@ -1,3 +1,7 @@
+# Deep clustering via AE
+# reference codes :
+# https://statslab.eighty20.co.za/posts/autoencoders_keras_r/
+# https://www.datatechnotes.com/2020/02/how-to-build-simple-autoencoder-with-keras-in-r.html
 
 library(keras)
 library(caret)
