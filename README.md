@@ -38,7 +38,7 @@ See more details and the required libraries in our R codes and follow them. You 
 Recommended libraries for Rstudio:
 1.	library(keras)
 2.	library(ggplot2)
-3.	library(R.matlab) # reading/writing .mat files
+3.	library(R.matlab) 
 4.	library(tidyverse)
 5.	library(tensorflow)
 6.	library(MLmetrics)
