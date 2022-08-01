@@ -16,11 +16,13 @@ library(R.matlab)
 # iData=as.matrix(inData$inDaGA.M1)
 # Lb=as.matrix(Lab$CC.label)
 
-inData <- readMat("C:/Users/Rza/Google Drive/Current/Deep clustering/SIM_GA_DC_NL/SimData_Gans.mat")
-Lab <- readMat("C:/Users/Rza/Google Drive/Current/Deep clustering/SIM_GA_DC_NL/CC_GT.mat")
-iData=as.matrix(inData$SimData.Gans[,,2]) # selecting dataset for training
+inData <- readMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/Sim_MS3_data/SimData_Gans.mat")
+Lab <- readMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/CC_GT.mat")
+iData=as.matrix(inData$SimData.Gans[,,6]) # selecting dataset for training
 # noise levels : 1=-10dB, 2=-5dB, 3=0dB, 4=5dB, 5=10dB, 6=20dB, 7=50dB
 Lb=as.matrix(Lab$CC.GT) # no noise and ground-truth
+# Lab <- readMat("C:/Users/Rza/Google Drive/Current/Deep clustering/SIM_GA_DC_NL/CC_label.mat")
+# Lb=as.matrix(Lab$CC.label)
 
 
 # Lab <- readMat("C:/Users/Rza/Google Drive/Current/Deep clustering/SIM_GA_DC_NL/CC_label.mat")
@@ -111,7 +113,7 @@ for(f in unique(folds)){
   model_1 <-model %>% fit(
     train_df, y_train, 
     epochs = ep, 
-    batch_size = 200,
+    batch_size = 150,
     validation_data = list(valid_df, y_valid)
   )
   # validation_split = 0.12
@@ -140,8 +142,8 @@ intermediate_layer_model <- keras_model(inputs = model$input, outputs = get_laye
 inData= array_reshape(X, c(dim(X), 1))
 intermediate_output <- predict(intermediate_layer_model, inData)
 
-writeMat("C:/Users/Rza/Google Drive/Current/Deep clustering/SIM_GA_DC_NL/dataFeature_LSTM.mat", dataFeature_LSTM=intermediate_output)
-writeMat("C:/Users/Rza/Google Drive/Current/Deep clustering/SIM_GA_DC_NL/tr_inf_LSTM.mat", tr_inf.F1=tr_inf[[1]],tr_inf.F2=tr_inf[[2]],
+writeMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/dataFeature_LSTM.mat", dataFeature_LSTM=intermediate_output)
+writeMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/tr_inf_LSTM.mat", tr_inf.F1=tr_inf[[1]],tr_inf.F2=tr_inf[[2]],
          tr_inf.F3=tr_inf[[3]],tr_inf.F4=tr_inf[[4]],tr_inf.F5=tr_inf[[5]],te_accloss=score)
 
 
