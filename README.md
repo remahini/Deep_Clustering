@@ -23,8 +23,6 @@ Optimal Number of Clusters by Measuring Similarity among Topographies for Spatio
 arXiv preprint arXiv:1911.09415.
 
 
-arXiv preprint arXiv:1911.09415.
-
 ------------------------- Before you run this Code -----------------------
 
 We need to run your individual DNNs to get these datasets 
