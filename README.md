@@ -8,15 +8,17 @@ Code by Reza Mahini r.mahini@gmail.com, remahini@jyu.fi
 
 Plese cite this work as :
 
-[1] Mahini, R., Li, Y., Ding, W., Fu, R., Ristaniemi, T., Nandi, A.K., et al. (2020).
+[1 ]Mahini, R., Li, F., Zarei, M., K. Nandi, A., Hämäläinen, T., & Cong, F. (2022). Deep Clustering Analysis for Time Window Determination of Event-Related Potential. BSPC-D-22-00635, Available at SSRN. https://doi.org/http://dx.doi.org/10.2139/ssrn.4068456 
+
+[2] Mahini, R., Li, Y., Ding, W., Fu, R., Ristaniemi, T., Nandi, A.K., et al. (2020).
 Determination of the Time Window of Event-Related Potential Using Multiple-Set Consensus Clustering.
 Frontiers in Neuroscience 14(1047). doi: 10.3389/fnins.2020.521595.
 
-[2] Mahini, R., Xu, P., Chen, G., Li, Y., Ding, W., Zhang, L., Qureshi, N. K., Hämäläinen, T., Nandi, A. K., & Cong, F. (2022).
+[3] Mahini, R., Xu, P., Chen, G., Li, Y., Ding, W., Zhang, L., Qureshi, N. K., Hämäläinen, T., Nandi, A. K., & Cong, F. (2022).
 Optimal Number of Clusters by Measuring Similarity Among Topographies for Spatio-Temporal ERP Analysis.
 Brain Topography. https://doi.org/10.1007/s10548-022-00903-2
 
-[3] Mahini, R., Xu, P., Chen, G., Li, Y., Ding, W., Zhang, L., et al. (2019).
+[4] Mahini, R., Xu, P., Chen, G., Li, Y., Ding, W., Zhang, L., et al. (2019).
 Optimal Number of Clusters by Measuring Similarity among Topographies for Spatio-temporal ERP Analysis.
 arXiv preprint arXiv:1911.09415.
 
@@ -24,6 +26,7 @@ arXiv preprint arXiv:1911.09415.
 arXiv preprint arXiv:1911.09415.
 
 ------------------------- Before you run this Code -----------------------
+
 We need to run your individual DNNs to get these datasets 
 
  Therefore
