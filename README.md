@@ -19,8 +19,6 @@ Please address these works if you find them useful:
 
 [3] Mahini, R., Xu, P., Chen, G., Li, Y., Ding, W., Zhang, L., Qureshi, N. K., Hämäläinen, T., Nandi, A. K., & Cong, F. (2022). Optimal Number of Clusters by Measuring Similarity Among Topographies for Spatio-Temporal ERP Analysis. Brain Topography. https://doi.org/10.1007/s10548-022-00903-2
 
-[4] Mahini, R., Xu, P., Chen, G., Li, Y., Ding, W., Zhang, L., et al. (2019). Optimal Number of Clusters by Measuring Similarity among Topographies for Spatio-temporal ERP Analysis. arXiv preprint arXiv:1911.09415
-
 
 Note ---------------------------------------------------------------------------------------------
 Before you run this Code, you will need to run individual DNNs to get these datasets. 
