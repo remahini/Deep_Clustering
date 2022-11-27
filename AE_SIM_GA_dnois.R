@@ -243,4 +243,3 @@ writeMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/tr_inf_AE.mat", tr_in
          tr_inf.F3=tr_inf[[3]],tr_inf.F4=tr_inf[[4]],tr_inf.F5=tr_inf[[5]],te_accloss=score)
 
 # End ---------------------
-# End ---------------------
