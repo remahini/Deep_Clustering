@@ -1,4 +1,20 @@
 # Deep embedded clustering
+# Data was prepared applying the temporal concatenating across the conditions
+# for individual subjects and grand averaged.
+
+# Note: the clustering result(labeling) should be fed on this procedure. Use MATLAB code
+# in downloaded pack for clustering initialization of this DNN.
+
+# Cite as:
+# Deep Clustering Analysis for Time Window Determination of Event-Related Potential
+# January 2022SSRN Electronic Journal
+# DOI: 10.2139/ssrn.4068456
+
+# Copyright:
+# This code provided by Reza Mahini, University of Jyväskylä, Finland.
+# If you had question or comments welcome to send me email to 
+# remahini@jyu.fi
+
 
 rm(list = ls())
 gc()  #free up memrory and report the memory usage.
@@ -35,32 +51,28 @@ library(aricode)
 
 
 
-# loading data fro mat file  -------------------------------------------------------------------
+# loading data fro mat file  ----------
 
-# inData <- readMat("D:/My works/Current/Deep clustering/ERP_CORE/P3_Data.mat")
-# Lab <- readMat("D:/My works/Current/Deep clustering/ERP_CORE/CC_idx.mat")
-# 
-# iData=as.matrix(inData$outData)
-# Lb=as.matrix(Lab$CC.Label)
-inData1 <- readMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/Sim_MS3_data/SimData_Gans.mat") # data without noise
-iData1=as.matrix(inData1$SimData.Gans[,,7]) # selecting dataset for training
+# noise levels : 1=50dB (no_noise) 2=20B, 3=10B, 4=5dB, 5=0dB, 6=-5dB
 
-inData <- readMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/Sim_MS3_data/SimData_Gans.mat") # noisy data
-iData=as.matrix(inData$SimData.Gans[,,6]) # selecting dataset for training
-# noise levels : 1=-10dB, 2=-5dB, 3=0dB, 4=5dB, 5=10dB, 6=20dB, 7=50dB
+inData1 <- readMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/Sim_MS3_data/SimDaGA_snr1.mat") # data without noise
+iData1=as.matrix(inData1$SimDaGA.snr1[,,1]) # selecting dataset for training
 
-Lab <- readMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/CC_GT.mat") # ground truth labels
+
+inData <- readMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/Sim_MS3_data/SimDaGA_snr1.mat") # noisy data
+iData=as.matrix(inData$SimDaGA.snr1[,,2]) # selecting dataset for training
+
+# this labeling is for an assesment 
+Lab <- readMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/CC_GT.mat")
 Lb=as.matrix(Lab$CC.GT) # no noise and ground-truth
-# Lab <- readMat("C:/Users/Rza/Google Drive/Current/Deep clustering/SIM_GA_DC_NL/CC_label.mat")
-# Lb=as.matrix(Lab$CC.label)
 
-# Initialization ------------------------------------------------------------------------------
+# Initialization -----------
 nbcl=6
 batchSz=150L
 ep=200L
 
 
-# ---------------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 # Fully connected auto-encoder model, symmetric.
 # Arguments:
@@ -226,21 +238,21 @@ DeepEmbeddedClusteringModel <- R6::R6Class( "DeepEmbeddedClusteringModel",
                                                 self$initializer <- initializer
                                                 self$convolutional <- convolutional
                                                 self$inputImageSize <- as.integer(inputImageSize)
-                     
+                                                
                                                 ae <- createAutoencoderModel( self$numberOfUnitsPerLayer,
                                                                               initializer = self$initializer )
                                                 self$autoencoder <- ae$autoencoderModel
                                                 self$encoder <- ae$encoderModel
-                                             
+                                                
                                                 # prepare DEC model wrapping -----------------------------------------------
                                                 
                                                 clusteringLayer <- self$encoder$output %>%
-                                                layer_clustering( self$numberOfClusters, name = "clustering" )
+                                                  layer_clustering( self$numberOfClusters, name = "clustering" )
                                                 
                                                 self$model <- keras_model( inputs = self$encoder$input, outputs = clusteringLayer )
-                                                },
+                                              },
                                               # here the model for reading input and deliver soft assignment is ready //me
-                                  
+                                              
                                               
                                               pretrain = function( x, y , optimizer=optimizer_rmsprop(learning_rate = 0.001), epochs = ep , batchSize = batchSz )
                                               {
@@ -307,14 +319,14 @@ DeepEmbeddedClusteringModel <- R6::R6Class( "DeepEmbeddedClusteringModel",
                                                   { 
                                                     q <- self$model$predict( x, verbose = 0 )
                                                     p <- self$targetDistribution( q ) # update the auxiliary target distribution p
-                                          
+                                                    
                                                     # evaluate the clustering performance
                                                     currentPrediction <- max.col( q )
                                                     
                                                     plot(currentPrediction, col="blue")
                                                     title(main = 'current prediction')
                                                     
-                                                   
+                                                    
                                                     # Met stopping criterion --------------------------------------------------
                                                     # evaluate the clustering performance
                                                     deltaLabel <- sum( currentPrediction != previousPrediction ) / length( currentPrediction )
@@ -338,7 +350,7 @@ DeepEmbeddedClusteringModel <- R6::R6Class( "DeepEmbeddedClusteringModel",
                                                   batchIndices <- indexArray[( index * batchSize + 1 ):min( ( index + 1 ) * batchSize, dim( x )[1] )]
                                                   
                                                   loss <- self$model$train_on_batch( x = x[batchIndices,], y = p[batchIndices,] )
-
+                                                  
                                                   if( ( index + 1 ) * batchSize + 1 <= dim( x )[1] )
                                                   {
                                                     index <- index + 1
@@ -348,7 +360,7 @@ DeepEmbeddedClusteringModel <- R6::R6Class( "DeepEmbeddedClusteringModel",
                                                 }
                                                 return( currentPrediction )
                                               }
-
+                                              
                                             )
 )
 
@@ -368,7 +380,7 @@ pretrainOptimizer <- optimizer_sgd( learning_rate = 0.001, momentum = 0.9 )
 initializer='glorot_uniform'
 
 decModel <- DeepEmbeddedClusteringModel$new(
-  numberOfUnitsPerLayer = c( numberOfPixels, 128, 256, 256, nbcl ),
+  numberOfUnitsPerLayer = c( numberOfPixels, 64, 256, 256, nbcl ),
   numberOfClusters = numberOfClusters, initializer = initializer )
 
 
@@ -379,7 +391,7 @@ decModel$pretrain( x=x, y=y , optimizer = pretrainOptimizer,
 decModel$compile( optimizer = optimizer_sgd( learning_rate = 0.001, momentum = 0.9 ), loss = 'kld')
 
 yPredicted <- decModel$fit( x, y, maxNumberOfIterations = 2000, batchSize = batchSz,
-                            tolerance = 1e-2, updateInterval = 5 )
+                            tolerance = 1e-2, updateInterval = 10 )
 
 
 #Saving the labels
