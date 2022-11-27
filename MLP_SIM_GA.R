@@ -1,40 +1,44 @@
-# clearning workspace
-rm(list = ls())
-gc()  #free up memrory and report the memory usage.
+# MLP_DNN Demo for ERP data ----------------------------------------
 
-# loding the libray --------------------------------
+# Data was prepared applying the temporal concatenating across the conditions
+# for individual subjects and grand averaged.
+
+# Note: the clustering result(labeling) should be fed on this procedure. Use MATLAB code
+# in downloaded pack for clustering initialization of this DNN.
+
+# Cite as:
+# Deep Clustering Analysis for Time Window Determination of Event-Related Potential
+# January 2022SSRN Electronic Journal
+# DOI: 10.2139/ssrn.4068456
+
+# Copyright:
+# This code provided by Reza Mahini, University of Jyväskylä, Finland.
+# If you had question or comments welcome to send me email to 
+# remahini@jyu.fi
+
+# -------------------------------------------------
+
+rm(list = ls()) # cleaning work space
+gc()  #free up memory and report the memory usage.
+
+# loading the library --------------------------------
 library(keras)
 library(ggplot2)
 library(R.matlab) # reading/writing .mat files
 
-# loading data fro mat file  --------------------
+# loading ERP mat data and consensus clustering (CC) labeling -----------------
 
+inData <- readMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/Sim_MS3_data/SimDaGA_snr1.mat")
+Lab <- readMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/CC_label.mat")
 
-# inData <- readMat("D:/My works/Current/Deep clustering/ERP_SIM_GA/inDaGA.mat")
-# Lab <- readMat("D:/My works/Current/Deep clustering/ERP_SIM_GA/CC_label.mat")
-# iData=as.matrix(inData$inDaGA.M1)
-# Lb=as.matrix(Lab$CC.label)
+# noise levels : 1=50dB (no_noise) 2=20B, 3=10B, 4=5dB, 5=0dB, 6=-5dB
 
-# normal shape of data without reforming
-# inData <- readMat("D:/My works/Current/S_ConClust/ERP_CC_MS/CC_SIM/inData_GA.mat")
-# Lab <- readMat
-
-# inData <- readMat("D:/My works/Current/Deep clustering/DC_Simulated data/inDaGA_M1.mat")
-# Lab <- readMat("D:/My works/Current/Deep clustering/DC_Simulated data/CC_M1_idx.mat")
-# 
-# iData=as.matrix(inData$inDaGA.M1)
-# Lb=as.matrix(Lab$Clu.idx2)
-
-inData <- readMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/Sim_MS3_data/SimData_Gans.mat")
-Lab <- readMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/CC_GT.mat")
-iData=as.matrix(inData$SimData.Gans[,,6]) # selecting dataset for training
-# noise levels : 1=-10dB, 2=-5dB, 3=0dB, 4=5dB, 5=10dB, 6=20dB, 7=50dB
-Lb=as.matrix(Lab$CC.GT) # no noise and ground-truth
-# Lab <- readMat("C:/Users/Rza/Google Drive/Current/Deep clustering/SIM_GA_DC_NL/CC_label.mat")
-# Lb=as.matrix(Lab$CC.label)
-
+iData=as.matrix(inData$SimDaGA.snr1[,,1]) # selecting data noise level e.g., SimDaGA.snr1[,,1] 'no noise'
+Lb=as.matrix(Lab$CC.lab) # CC labeling result provided in MATLAB 
+Lb = Lb-1 
 
 # defining training and test sets ------------------
+
 nbcl=6
 SPLT=0.8
 N_Samp=length(Lb)    #600   # 19500  
@@ -49,8 +53,8 @@ x_test = as.matrix(iData[test.ind, 1:d_dim])
 y_test= as.matrix(Lb[test.ind])
 
 
-# ----------------------------------------------------
-# Initialize model
+# Initialize model ---------------------
+
 model <- keras_model_sequential()
 model %>% 
   
@@ -70,21 +74,20 @@ model %>%
 
 summary(model)
 
-sgd <- optimizer_sgd(lr = 0.001)
+#sgd <- optimizer_sgd(lr = 0.001)
 
 # Try using different optimizers and different optimizer configs
 model %>% compile(
-  optimizer = 'adam',
+  optimizer = optimizer_adam(learning_rate = 0.001), # 'adam',
   loss = "sparse_categorical_crossentropy",
   metrics = c("accuracy")
 )
 
-
-# Cross-validation ----------------------------------------------------
+# Cross-validation -----------------------
 
 library(caret)
 
-# Training only on train set
+# Training initialization 
 idx=c(1:b)
 ep=100
 folds <- createFolds(idx, k = 5, list = F)
@@ -153,3 +156,5 @@ intermediate_output <- predict(intermediate_layer_model, iData)
 writeMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/dataFeature_MLP.mat", dataFeature_MLP=intermediate_output)
 writeMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/tr_inf_MLP.mat", tr_inf.F1=tr_inf[[1]],tr_inf.F2=tr_inf[[2]],
          tr_inf.F3=tr_inf[[3]],tr_inf.F4=tr_inf[[4]],tr_inf.F5=tr_inf[[5]],te_accloss=score)
+
+# end ---------------------------
