@@ -1,17 +1,24 @@
 # Original VAE for Clustering 
 
-#' This script demonstrates how to build a variational autoencoder with Keras.
-#' Reference: "Auto-Encoding Variational Bayes" https://arxiv.org/abs/1312.6114
+# Data was prepared applying the temporal concatenating across the conditions
+# for individual subjects and grand averaged.
 
-# Note: This code reflects pre-TF2 idioms.
-# For an example of a TF2-style modularized VAE, see e.g.: https://github.com/rstudio/keras/blob/master/vignettes/examples/eager_cvae.R
-# Also cf. the tfprobability-style of coding VAEs: https://rstudio.github.io/tfprobability/
+# Note: the clustering result(labeling) should be fed on this procedure. Use MATLAB code
+# in downloaded pack for clustering initialization of this DNN.
 
-# With TF-2, you can still run this code due to the following line:
+# Cite as:
+# Deep Clustering Analysis for Time Window Determination of Event-Related Potential
+# January 2022SSRN Electronic Journal
+# DOI: 10.2139/ssrn.4068456
+
+# Copyright:
+# This code provided by Reza Mahini, University of Jyväskylä, Finland.
+# If you had question or comments welcome to send me email to 
+# remahini@jyu.fi
+
 
 if (tensorflow::tf$executing_eagerly())
   tensorflow::tf$compat$v1$disable_eager_execution()
-
 
 library(keras)
 library(tidyverse)
@@ -22,13 +29,16 @@ library(aricode)
 library(R.matlab)
 
 # loading data fro mat file  -----------------------------------------
-inData1 <- readMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/Sim_MS3_data/SimData_Gans.mat") # data without noise
-iData1=as.matrix(inData1$SimData.Gans[,,7]) # selecting dataset for training
+
+# noise levels : 1=50dB (no_noise) 2=20B, 3=10B, 4=5dB, 5=0dB, 6=-5dB
+
+inData1 <- readMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/Sim_MS3_data/SimDaGA_snr1.mat") # data without noise
+iData1=as.matrix(inData1$SimDaGA.snr1[,,1]) # selecting dataset for training
 
 
-inData <- readMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/Sim_MS3_data/SimData_Gans.mat") # noisy data
-iData=as.matrix(inData$SimData.Gans[,,6]) # selecting dataset for training
-# noise levels : 1=-10dB, 2=-5dB, 3=0dB, 4=5dB, 5=10dB, 6=20dB, 7=50dB
+inData <- readMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/Sim_MS3_data/SimDaGA_snr1.mat") # noisy data
+iData=as.matrix(inData$SimDaGA.snr1[,,2]) # selecting dataset for training
+
 
 Lab <- readMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/CC_GT.mat")
 Lb=as.matrix(Lab$CC.GT) # no noise and ground-truth
@@ -210,7 +220,7 @@ for(f in unique(folds)){
 
 summary(vae)
 
-score <- vae%>% keras::evaluate(x_test, x_test)
+score <- vae%>% keras::evaluate(x_test, x_test_clean)
 
 
 # ------------------------------------------------------------
@@ -231,3 +241,5 @@ writeMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/currentPrediction.mat
 writeMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/dataFeature_VAE.mat", dataFeature_VAE=intermediate_output)
 writeMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/tr_inf_VAE.mat", tr_inf.F1=tr_inf[[1]],tr_inf.F2=tr_inf[[2]],
          tr_inf.F3=tr_inf[[3]],tr_inf.F4=tr_inf[[4]],tr_inf.F5=tr_inf[[5]],te_accloss=score)
+
+# End --------------------------------
