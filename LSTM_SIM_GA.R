@@ -1,35 +1,43 @@
-# Keras LSTM for simulated ERP data ---------------------------------------------
-# Data simulated for 20 subjets, two coditions and  predefined 6 components.
-# Pre-laveling provided by CC configured with: 
-# (k-means, Hierarchical clustering, FCM, SOM, and modified k-means)
+# LSTM DNN Demo for ERP data -------------------------
+
+# Data was prepared applying the temporal concatenating across the conditions
+# for individual subjects and grand averaged.
+
+# Note: the clustering result(labeling) should be fed on this procedure. Use MATLAB code
+# in downloaded pack for clustering initialization of this DNN.
+
+# Cite as:
+# Deep Clustering Analysis for Time Window Determination of Event-Related Potential
+# January 2022SSRN Electronic Journal
+# DOI: 10.2139/ssrn.4068456
+
+# Copyright:
+# This code provided by Reza Mahini, University of Jyväskylä, Finland.
+# If you had question or comments welcome to send me email to 
+# remahini@jyu.fi
 
 
-# loding the libray ------------------------------------------------------------
+# loading the libraries  ------------------------
 library(keras)
 library(tensorflow)
 library(ggplot2)
 library(R.matlab)
 
 # loading data fro mat file  --------------------
-# inData <- readMat("D:/My works/Current/S_ConClust/ERP_CC_GA_Toolbox/full/inDaGA.mat")
-# Lab <- readMat("D:/My works/Current/S_ConClust/ERP_CC_GA_Toolbox/full/CC_label.mat")
-# iData=as.matrix(inData$inDaGA.M1)
-# Lb=as.matrix(Lab$CC.label)
-
-inData <- readMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/Sim_MS3_data/SimData_Gans.mat")
-Lab <- readMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/CC_GT.mat")
-iData=as.matrix(inData$SimData.Gans[,,6]) # selecting dataset for training
-# noise levels : 1=-10dB, 2=-5dB, 3=0dB, 4=5dB, 5=10dB, 6=20dB, 7=50dB
-Lb=as.matrix(Lab$CC.GT) # no noise and ground-truth
-# Lab <- readMat("C:/Users/Rza/Google Drive/Current/Deep clustering/SIM_GA_DC_NL/CC_label.mat")
-# Lb=as.matrix(Lab$CC.label)
 
 
-# Lab <- readMat("C:/Users/Rza/Google Drive/Current/Deep clustering/SIM_GA_DC_NL/CC_label.mat")
-# Lb=as.matrix(Lab$CC.label)
+inData <- readMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/Sim_MS3_data/SimDaGA_snr1.mat")
+Lab <- readMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/CC_label.mat")
+
+# noise levels : 1=50dB (no_noise) 2=20B, 3=10B, 4=5dB, 5=0dB, 6=-5dB
+
+iData=as.matrix(inData$SimDaGA.snr1[,,2]) # selecting data noise level e.g., SimDaGA.snr1[,,1] 'no noise'
+Lb=as.matrix(Lab$CC.lab) # CC labeling result provided in MATLAB, note that labels should be [0,nbc-1] 
+# nbc =number of clusters
 
 
-# defining training and test sets --------------------------------------------
+
+# defining training and test sets -------------------
 
 X = as.matrix(iData[, 1:65])
 
@@ -44,7 +52,7 @@ b=floor(SPLT*N_Samp)
 # x_train = array_reshape(X[1:b,], c(dim(X[1:b,]), 1))
 x_test = array_reshape(X[(b+1):N_Samp,], c(dim(X[(b+1):N_Samp,]), 1))
 # y_train =Y[1:b]
-y_test = Y[(b+1):N_Samp]
+y_test = as.matrix(Y[(b+1):N_Samp])
 
 
 # ---------------------------------------------------------------------------
@@ -70,9 +78,8 @@ model %>%
   layer_dense(units = 64, activation = "relu") %>%
   layer_batch_normalization() %>% 
   
-  layer_dense(units = nbcl, activation = 'softmax')%>%
-  
-  summary(model) 
+  layer_dense(units = nbcl, activation = 'softmax')
+
 
 model %>% compile(
   optimizer = "rmsprop",
@@ -81,6 +88,7 @@ model %>% compile(
 )
 
 
+summary(model) 
 
 # Cross-validation ----------------------------------------------------
 
@@ -132,6 +140,8 @@ for(f in unique(folds)){
 
 score <- model%>% keras::evaluate(x_test, y_test)
 
+y_pred <- model %>% predict(x_test) #  why ntstsmple x nmbc ?
+
 summary(model)
 
 get_config(model)
@@ -147,7 +157,4 @@ writeMat("D:/My works/Current/Deep clustering/SIM_GA_DC_NL/tr_inf_LSTM.mat", tr_
          tr_inf.F3=tr_inf[[3]],tr_inf.F4=tr_inf[[4]],tr_inf.F5=tr_inf[[5]],te_accloss=score)
 
 
-
-
-
-
+#End ---------------------------------------
