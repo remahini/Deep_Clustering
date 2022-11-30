@@ -1,4 +1,4 @@
-Ensemble Consensus clustering for time window determination of grand average ERP
+Ensemble Deep clustering for time window determination of grand average ERP
 
 This demo presents using the ensemble deep clustering method based on our latest work that is under review in Brain Signal Processing and Control journal [1]. We design an ensemble clustering from popular deep clustering methods, including semi-supervised methods initialized by consensus clustering and unsupervised deep clustering methods with end-to-end architectures. Afterward, an adaptive time window determination method is used for qualifying and determining the time window for the ERP of interest. For an assessment, we apply the proposed method to ERP dataset with different strengths of additional noise (i.e., from 20 dB to -5 dB).
 
