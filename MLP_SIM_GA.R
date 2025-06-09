@@ -83,7 +83,7 @@ model %>% compile(
   metrics = c("accuracy")
 )
 
-# Cross-validation -----------------------
+# accumulated learning -----------------------
 
 library(caret)
 
