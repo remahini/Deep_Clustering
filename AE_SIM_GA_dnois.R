@@ -156,7 +156,9 @@ x_test_clean = as.matrix(iData1[test.ind, 1:d_dim])
 # y_test= as.matrix(Lb[test.ind])
 
 
-# Cross-validation ----------------------------------------------------
+# accumulated learning -----------------------
+
+
 # Training only on train set
 idx=c(1:b)
 
