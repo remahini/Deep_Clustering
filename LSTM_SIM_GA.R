@@ -90,7 +90,7 @@ model %>% compile(
 
 summary(model) 
 
-# Cross-validation ----------------------------------------------------
+# accumulated learning -----------------------
 
 library(caret)
 
