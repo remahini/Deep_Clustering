@@ -164,7 +164,7 @@ x_test_clean = as.matrix(iData1[test.ind, 1:d_dim])
 
 # Model training ----------------------------------------------------------
 
-# Cross-validation ----------------------------------------------------
+# accumulated learning -----------------------
 
 library(caret)
 
